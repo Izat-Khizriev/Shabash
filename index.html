@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <!-- Отключаем масштабирование для имитации нативного приложения -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Шабашка - Биржа подработок</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000; /* Темный фон вне приложения для красоты на десктопе */
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Скрываем скроллбары для ощущения нативного приложения */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Анимации для навигации */
+        .nav-btn .nav-bg {
+            transform: scale(0.5);
+            opacity: 0;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .active-nav .nav-bg {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .active-nav i {
+            color: #2563eb; /* text-blue-600 */
+        }
+        
+        /* Плавное появление экранов */
+        .screen-fade {
+            animation: fadeIn 0.2s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- Главный контейнер приложения, имитирующий экран телефона -->
+    <div class="relative w-full max-w-[430px] h-[100dvh] bg-gray-50 flex flex-col overflow-hidden shadow-2xl sm:rounded-[2.5rem] sm:border-[8px] border-gray-800">
+        
+        <!-- HEADER (Верхняя панель) -->
+        <header class="bg-white/95 backdrop-blur-md px-5 py-4 flex items-center justify-between shadow-sm z-20 shrink-0">
+            <!-- Невидимый блок для идеального центрирования заголовка -->
+            <div class="w-10"></div> 
+            <h1 class="text-xl font-bold text-gray-900 tracking-tight">Шабашка</h1>
+            <button id="btn-chats" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-blue-600 transition-colors rounded-full bg-gray-50">
+                <i class="fas fa-paper-plane text-lg"></i>
+                <!-- Индикатор нового сообщения -->
+                <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+            </button>
+        </header>
+
+        <!-- MAIN CONTENT (Скроллируемая область) -->
+        <main class="flex-1 overflow-y-auto relative w-full">
+            
+            <!-- ЭКРАН: Лента заданий (Активен по умолчанию) -->
+            <div id="feed-screen" class="screen block p-4 space-y-4 pb-6 screen-fade">
+                <!-- Карточка задания 1 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col gap-3">
+                    <div class="flex justify-between items-start gap-4">
+                        <h2 class="font-bold text-[17px] leading-tight text-gray-900">Починить проводку на кухне, искрит розетка</h2>
+                        <span class="bg-blue-50 text-blue-700 font-bold px-3 py-1.5 rounded-xl text-sm shrink-0 whitespace-nowrap">1 500 ₽</span>
+                    </div>
+                    <div class="flex items-center text-sm font-medium text-gray-500 gap-2 mt-1">
+                        <div class="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                            <i class="fas fa-map-marker-alt text-red-500 text-xs"></i>
+                        </div>
+                        <span class="truncate">ул. Ленина, 45, кв 12 (Центр)</span>
+                    </div>
+                    <p class="text-gray-600 text-sm line-clamp-2 leading-relaxed">Искрит розетка возле плиты, нужно посмотреть и заменить. Провода старые. Инструменты и новую розетку желательно привезти с собой, я оплачу по чеку.</p>
+                    <button class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md active:scale-[0.98]">Откликнуться на задание</button>
+                </div>
+
+                <!-- Карточка задания 2 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col gap-3">
+                    <div class="flex justify-between items-start gap-4">
+                        <h2 class="font-bold text-[17px] leading-tight text-gray-900">Довезти посылку до аэропорта</h2>
+                        <span class="bg-blue-50 text-blue-700 font-bold px-3 py-1.5 rounded-xl text-sm shrink-0 whitespace-nowrap">800 ₽</span>
+                    </div>
+                    <div class="flex items-center text-sm font-medium text-gray-500 gap-2 mt-1">
+                        <div class="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                            <i class="fas fa-map-marker-alt text-red-500 text-xs"></i>
+                        </div>
+                        <span class="truncate">ЖД Вокзал ➔ Аэропорт</span>
+                    </div>
+                    <p class="text-gray-600 text-sm line-clamp-2 leading-relaxed">Небольшая коробка 2кг, нужно забрать у меня на вокзале до 14:00 и срочно отвезти в терминал B.</p>
+                    <button class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md active:scale-[0.98]">Откликнуться на задание</button>
+                </div>
+                
+                <!-- Карточка задания 3 -->
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col gap-3">
+                    <div class="flex justify-between items-start gap-4">
+                        <h2 class="font-bold text-[17px] leading-tight text-gray-900">Разгрузить Газель (стройматериалы)</h2>
+                        <span class="bg-blue-50 text-blue-700 font-bold px-3 py-1.5 rounded-xl text-sm shrink-0 whitespace-nowrap">2 000 ₽</span>
+                    </div>
+                    <div class="flex items-center text-sm font-medium text-gray-500 gap-2 mt-1">
+                        <div class="w-6 h-6 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+                            <i class="fas fa-map-marker-alt text-red-500 text-xs"></i>
+                        </div>
+                        <span class="truncate">ул. Строителей, 12а</span>
+                    </div>
+                    <p class="text-gray-600 text-sm line-clamp-2 leading-relaxed">Нужно 2 крепких парня. Разгрузить смеси (по 25кг) и гипсокартон. Поднять на 3 этаж без лифта. Оплата каждому.</p>
+                    <button class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all shadow-md active:scale-[0.98]">Откликнуться на задание</button>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: Поиск -->
+            <div id="search-screen" class="screen hidden p-4 h-full flex flex-col screen-fade">
+                <div class="relative shrink-0 mb-4">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+                    <input type="text" placeholder="Например: довезти" class="w-full bg-white border-2 border-transparent shadow-sm pl-12 pr-4 py-3.5 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all font-medium text-gray-800 placeholder-gray-400">
+                </div>
+                
+                <div class="flex-1 overflow-y-auto">
+                    <h3 class="font-bold text-gray-900 mb-3 px-1 text-lg">Популярные категории</h3>
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="bg-white border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium text-gray-700 shadow-sm">Ремонт</span>
+                        <span class="bg-white border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium text-gray-700 shadow-sm">Курьер</span>
+                        <span class="bg-white border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium text-gray-700 shadow-sm">Грузчики</span>
+                        <span class="bg-white border border-gray-200 px-4 py-2 rounded-xl text-sm font-medium text-gray-700 shadow-sm">Уборка</span>
+                    </div>
+
+                    <div class="flex flex-col items-center justify-center mt-10 text-center px-4 opacity-50">
+                        <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 font-medium">Введите запрос в строку поиска,<br>чтобы найти подходящие задания</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: Добавить задание -->
+            <div id="add-screen" class="screen hidden h-full flex flex-col bg-white screen-fade">
+                <div class="p-5 border-b border-gray-100 shrink-0">
+                    <h2 class="text-2xl font-extrabold text-gray-900">Новое задание</h2>
+                    <p class="text-gray-500 text-sm mt-1">Опишите, что нужно сделать</p>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-5 space-y-5">
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Название</label>
+                        <input type="text" class="w-full bg-gray-50 border border-gray-200 px-4 py-3.5 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-colors" placeholder="Например: Собрать шкаф IKEA">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Подробное описание</label>
+                        <textarea rows="4" class="w-full bg-gray-50 border border-gray-200 px-4 py-3.5 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-colors resize-none" placeholder="Укажите детали, требуемые инструменты, сроки..."></textarea>
+                    </div>
+                    
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Цена (₽)</label>
+                            <div class="relative">
+                                <input type="number" class="w-full bg-gray-50 border border-gray-200 px-4 py-3.5 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-colors font-bold text-blue-700" placeholder="0">
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₽</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Местоположение</label>
+                        <div class="relative">
+                            <i class="fas fa-map-marker-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
+                            <input type="text" class="w-full bg-gray-50 border border-gray-200 pl-11 pr-4 py-3.5 rounded-xl focus:outline-none focus:border-blue-500 focus:bg-white transition-colors" placeholder="Укажите адрес">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Кнопка прилипает к низу формы (над bottom nav) -->
+                <div class="p-5 bg-white border-t border-gray-100 shrink-0">
+                    <button class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:bg-blue-700 active:scale-[0.98] transition-all text-lg">Опубликовать задание</button>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: Профиль -->
+            <div id="profile-screen" class="screen hidden screen-fade">
+                <!-- Шапка профиля -->
+                <div class="bg-white p-6 flex flex-col items-center border-b border-gray-100">
+                    <div class="w-28 h-28 rounded-full bg-blue-50 flex items-center justify-center text-3xl font-bold mb-4 shadow-sm border-4 border-white relative">
+                        <img src="https://placehold.co/300x300/e0e7ff/2563eb?text=А" class="w-full h-full object-cover rounded-full" alt="Аватар">
+                        <button class="absolute bottom-0 right-0 bg-blue-600 w-10 h-10 rounded-full text-white flex items-center justify-center border-4 border-white shadow-sm active:scale-95 transition-transform"><i class="fas fa-camera text-sm"></i></button>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-gray-900">Александр, 34</h2>
+                    <p class="text-blue-600 font-semibold mb-4 mt-1 bg-blue-50 px-3 py-1 rounded-lg">Машинист экскаватора</p>
+                    
+                    <div class="flex items-center gap-1 text-yellow-400 text-xl mb-6 bg-gray-50 px-4 py-2 rounded-2xl">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        <span class="text-gray-900 font-bold ml-2 text-lg">4.8</span>
+                        <span class="text-gray-400 text-sm ml-1 font-medium">(124)</span>
+                    </div>
+                    
+                    <button class="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-3.5 rounded-xl transition-colors">Редактировать профиль</button>
+                </div>
+                
+                <!-- Статистика -->
+                <div class="p-4">
+                    <h3 class="font-bold text-gray-900 mb-3 px-2 text-lg">Моя статистика</h3>
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex justify-between text-center">
+                        <div class="flex-1">
+                            <div class="text-3xl font-extrabold text-blue-600">86</div>
+                            <div class="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">Выполнено</div>
+                        </div>
+                        <div class="w-px bg-gray-100 mx-2"></div>
+                        <div class="flex-1">
+                            <div class="text-3xl font-extrabold text-gray-900">3</div>
+                            <div class="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">В работе</div>
+                        </div>
+                        <div class="w-px bg-gray-100 mx-2"></div>
+                        <div class="flex-1">
+                            <div class="text-3xl font-extrabold text-green-600">12k</div>
+                            <div class="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">Заработано</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ЭКРАН: Настройки -->
+            <div id="settings-screen" class="screen hidden p-4 space-y-6 screen-fade">
+                <h2 class="text-2xl font-extrabold text-gray-900 mb-2 px-2">Настройки</h2>
+                
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <!-- Настройка 1 -->
+                    <div class="flex items-center justify-between p-4 border-b border-gray-50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"><i class="fas fa-map-marker-alt text-lg"></i></div>
+                            <div>
+                                <div class="font-bold text-gray-900">Геолокация</div>
+                                <div class="text-xs text-gray-500 mt-0.5">Для поиска заданий рядом</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" class="sr-only peer" checked>
+                          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    
+                    <!-- Настройка 2 -->
+                    <div class="flex items-center justify-between p-4 border-b border-gray-50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600"><i class="fas fa-bell text-lg"></i></div>
+                            <div>
+                                <div class="font-bold text-gray-900">Уведомления</div>
+                                <div class="text-xs text-gray-500 mt-0.5">Новые отклики и сообщения</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" value="" class="sr-only peer" checked>
+                          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                    
+                    <!-- Настройка 3 -->
+                    <div class="flex items-center justify-between p-4 cursor-pointer active:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600"><i class="fas fa-globe text-lg"></i></div>
+                            <div class="font-bold text-gray-900">Язык</div>
+                        </div>
+                        <div class="text-gray-500 font-medium text-sm flex items-center gap-2">
+                            Русский <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-6">
+                     <div class="flex items-center justify-between p-4 cursor-pointer active:bg-gray-50 transition-colors">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600"><i class="fas fa-question-circle text-lg"></i></div>
+                            <div class="font-bold text-gray-900">Помощь и поддержка</div>
+                        </div>
+                        <i class="fas fa-chevron-right text-xs text-gray-400"></i>
+                    </div>
+                </div>
+                
+                <button class="w-full bg-red-50 text-red-600 font-bold py-4 rounded-xl active:scale-[0.98] transition-transform mt-8">Выйти из аккаунта</button>
+            </div>
+
+            <!-- ЭКРАН: Чаты (Открывается по кнопке из хедера) -->
+            <div id="chats-screen" class="screen hidden bg-white h-full z-30 absolute inset-0 flex flex-col screen-fade">
+                <div class="px-4 py-4 flex items-center border-b border-gray-100 shrink-0 bg-white">
+                    <button id="btn-back-chats" class="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-full transition-colors mr-2">
+                        <i class="fas fa-arrow-left text-lg"></i>
+                    </button>
+                    <h2 class="text-2xl font-extrabold text-gray-900">Сообщения</h2>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-2">
+                    <!-- Чат 1 -->
+                    <div class="p-3 rounded-2xl flex items-center gap-4 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer">
+                        <div class="w-14 h-14 rounded-full bg-gray-200 overflow-hidden shrink-0 relative">
+                            <img src="https://placehold.co/100x100/e0e7ff/2563eb?text=И" alt="Иван" class="w-full h-full object-cover">
+                            <!-- Статус онлайн -->
+                            <div class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-baseline mb-1">
+                                <h4 class="font-bold text-gray-900 text-base truncate">Иван (Заказчик)</h4>
+                                <span class="text-xs font-medium text-gray-400 shrink-0 ml-2">12:45</span>
+                            </div>
+                            <p class="text-sm text-gray-600 truncate">Договорились, буду к 15:00 с инструментами.</p>
+                        </div>
+                        <div class="w-2.5 h-2.5 rounded-full bg-blue-600 shrink-0"></div> <!-- Непрочитанное -->
+                    </div>
+                    
+                    <div class="w-full h-px bg-gray-50 my-1 ml-[72px]"></div>
+                    
+                    <!-- Чат 2 -->
+                    <div class="p-3 rounded-2xl flex items-center gap-4 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer">
+                        <div class="w-14 h-14 rounded-full bg-gray-200 overflow-hidden shrink-0 relative">
+                            <img src="https://placehold.co/100x100/ffedd5/ea580c?text=М" alt="Мария" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-baseline mb-1">
+                                <h4 class="font-bold text-gray-900 text-base truncate">Мария</h4>
+                                <span class="text-xs font-medium text-gray-400 shrink-0 ml-2">Вчера</span>
+                            </div>
+                            <p class="text-sm text-gray-500 truncate">Спасибо за работу, все отлично!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM NAVIGATION (Нижняя панель) -->
+        <nav class="bg-white border-t border-gray-100 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] z-20 shrink-0">
+            <!-- Отступ снизу для iPhone (safe area) -->
+            <div class="flex justify-between items-center px-4 py-2 pb-4 md:pb-3">
+                
+                <button class="nav-btn relative flex items-center justify-center w-14 h-12 rounded-2xl text-gray-400" data-target="search-screen">
+                    <div class="nav-bg absolute inset-0 bg-blue-50 rounded-xl"></div>
+                    <i class="fas fa-search relative z-10 text-xl transition-colors duration-200"></i>
+                </button>
+                
+                <!-- Активная вкладка по умолчанию (класс active-nav) -->
+                <button class="nav-btn relative flex items-center justify-center w-14 h-12 rounded-2xl text-gray-400 active-nav" data-target="feed-screen">
+                    <div class="nav-bg absolute inset-0 bg-blue-50 rounded-xl"></div>
+                    <i class="fas fa-list relative z-10 text-xl transition-colors duration-200"></i>
+                </button>
+                
+                <button class="nav-btn relative flex items-center justify-center w-14 h-12 rounded-2xl text-gray-400" data-target="add-screen">
+                    <div class="nav-bg absolute inset-0 bg-blue-50 rounded-xl"></div>
+                    <i class="fas fa-plus-circle relative z-10 text-[22px] transition-colors duration-200"></i>
+                </button>
+                
+                <button class="nav-btn relative flex items-center justify-center w-14 h-12 rounded-2xl text-gray-400" data-target="profile-screen">
+                    <div class="nav-bg absolute inset-0 bg-blue-50 rounded-xl"></div>
+                    <i class="fas fa-user relative z-10 text-xl transition-colors duration-200"></i>
+                </button>
+                
+                <button class="nav-btn relative flex items-center justify-center w-14 h-12 rounded-2xl text-gray-400" data-target="settings-screen">
+                    <div class="nav-bg absolute inset-0 bg-blue-50 rounded-xl"></div>
+                    <i class="fas fa-cog relative z-10 text-xl transition-colors duration-200"></i>
+                </button>
+                
+            </div>
+        </nav>
+    </div>
+
+    <!-- JS Логика переключения -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const screens = document.querySelectorAll('.screen:not(#chats-screen)'); // Все экраны кроме чатов, они поверх
+            const chatsScreen = document.getElementById('chats-screen');
+            const btnChats = document.getElementById('btn-chats');
+            const btnBackChats = document.getElementById('btn-back-chats');
+
+            // Логика переключения нижнего меню
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // 1. Убираем активный класс со всех кнопок
+                    navButtons.forEach(b => b.classList.remove('active-nav'));
+                    // 2. Добавляем активный класс нажатой кнопке
+                    btn.classList.add('active-nav');
+                    
+                    // 3. Скрываем все экраны
+                    screens.forEach(screen => {
+                        screen.classList.add('hidden');
+                        screen.classList.remove('block');
+                    });
+                    
+                    // Убираем экран чатов если он был открыт
+                    chatsScreen.classList.add('hidden');
+                    chatsScreen.classList.remove('flex');
+                    
+                    // 4. Показываем нужный экран
+                    const targetId = btn.getAttribute('data-target');
+                    const targetScreen = document.getElementById(targetId);
+                    if (targetScreen) {
+                        targetScreen.classList.remove('hidden');
+                        // Если это форма, делаем ее flex для правильного растягивания
+                        if (targetId === 'add-screen' || targetId === 'search-screen') {
+                            targetScreen.classList.add('flex');
+                        } else {
+                            targetScreen.classList.add('block');
+                        }
+                    }
+                });
+            });
+
+            // Открытие чатов из верхней панели
+            btnChats.addEventListener('click', () => {
+                // Показываем поверх всего остального
+                screens.forEach(screen => {
+                    screen.classList.add('hidden');
+                    screen.classList.remove('block', 'flex');
+                });
+                chatsScreen.classList.remove('hidden');
+                chatsScreen.classList.add('flex');
+                
+                // Убираем подсветку с нижней панели
+                navButtons.forEach(b => b.classList.remove('active-nav'));
+            });
+
+            // Закрытие чатов (возврат на главную)
+            btnBackChats.addEventListener('click', () => {
+                chatsScreen.classList.add('hidden');
+                chatsScreen.classList.remove('flex');
+                
+                // Возвращаем на ленту заданий по умолчанию
+                document.querySelector('[data-target="feed-screen"]').click();
+            });
+        });
+    </script>
+</body>
+</html>
